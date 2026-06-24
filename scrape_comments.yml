@@ -18,13 +18,27 @@
           - certifi
         state: present
 
-    - name: Clone or update feed repo
-      ansible.builtin.git:
-        repo: "{{ repo_url }}"
-        dest: "{{ feed_repo_dir }}"
-        version: main
-        force: false
-        accept_newhostkey: true
+    - name: Check if feed repo exists
+      ansible.builtin.stat:
+        path: "{{ feed_repo_dir }}/.git"
+      register: repo_check
+
+    - name: Clone feed repo
+      ansible.builtin.command:
+        cmd: "git clone {{ repo_url }} {{ feed_repo_dir }}"
+      when: not repo_check.stat.exists
+
+    - name: Pull latest feed repo
+      ansible.builtin.command:
+        cmd: "git -C {{ feed_repo_dir }} pull --ff-only"
+      when: repo_check.stat.exists
+
+    - name: Configure git user for commits
+      ansible.builtin.command:
+        cmd: "{{ item }}"
+      loop:
+        - "git -C {{ feed_repo_dir }} config user.email aap-scraper@ansible-tmm"
+        - "git -C {{ feed_repo_dir }} config user.name AAP-Scraper"
 
     - name: Create work directory
       ansible.builtin.file:
