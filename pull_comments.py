@@ -26,7 +26,7 @@ except ImportError:
 sys.stdout.reconfigure(line_buffering=True)
 
 CHANNEL_URL = "https://www.youtube.com/@AnsibleAutomation/videos"
-FEED_REPO = "https://github.com/ansible-tmm/youtube-comments-feed.git"
+FEED_REPO = "git@github.com:ansible-tmm/youtube-comments-feed.git"
 FEED_URL = "https://ansible-tmm.github.io/youtube-comments-feed/feed.xml"
 DELAY_BETWEEN_VIDEOS = 2
 MAX_FEED_ITEMS = 500

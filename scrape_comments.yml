@@ -6,10 +6,13 @@
 
   vars:
     tier: "all"
-    repo_url: "https://github.com/ansible-tmm/youtube-comments-feed.git"
+    repo_url: "git@github.com:ansible-tmm/youtube-comments-feed.git"
     work_dir: "/tmp/youtube-comments-scrape"
     feed_repo_dir: "/tmp/youtube-comments-feed"
-    script_url: "https://raw.githubusercontent.com/ansible-tmm/youtube-comments-feed/main/pull_comments.py"
+    deploy_key_path: "~/.ssh/yt-comments-deploy"
+
+  environment:
+    GIT_SSH_COMMAND: "ssh -i {{ deploy_key_path }} -o StrictHostKeyChecking=accept-new"
 
   tasks:
     - name: Ensure pip dependencies are installed
@@ -25,6 +28,13 @@
         dest: "{{ feed_repo_dir }}"
         version: main
         force: false
+        key_file: "{{ deploy_key_path }}"
+
+    - name: Create work directory
+      ansible.builtin.file:
+        path: "{{ work_dir }}"
+        state: directory
+        mode: "0755"
 
     - name: Copy scraper script to work directory
       ansible.builtin.copy:
