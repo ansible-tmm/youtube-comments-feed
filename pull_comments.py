@@ -156,16 +156,16 @@ def build_feed(existing_feed_file, new_comments):
     for c in new_comments:
         if c["comment_id"] in existing_guids:
             continue
-        prefix = "Reply: " if c["is_reply"] else ""
+        prefix = "↩ " if c["is_reply"] else ""
         pub_date = ""
         if c.get("timestamp"):
             dt = datetime.fromtimestamp(c["timestamp"], tz=timezone.utc)
             pub_date = format_datetime(dt)
-        likes = f" [{c['likes']} likes]" if c.get("likes") else ""
+        text = c["text"][:200] + ("…" if len(c["text"]) > 200 else "")
         existing_items.append({
-            "title": f"{prefix}{c['author']} on \"{c['video_title']}\"",
+            "title": f"{prefix}{c['author']}: {text}",
             "link": c["video_url"],
-            "description": f"{c['text']}{likes}",
+            "description": c["video_title"],
             "guid": c["comment_id"],
             "pubDate": pub_date,
         })
